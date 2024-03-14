@@ -17,7 +17,7 @@ resource "tls_self_signed_cert" "ca" {
 
   subject {
     common_name  = "${var.env}.vpn.ca"
-    organization = "reach-atribo"
+    organization = "reach-org"
   }
   validity_period_hours = 87600
   is_ca_certificate     = true
@@ -64,7 +64,7 @@ resource "tls_cert_request" "endpoint" {
   private_key_pem = tls_private_key.endpoint[0].private_key_pem
   subject {
     common_name  = "${var.env}.vpn.endpoint"
-    organization = "reach-atribo"
+    organization = "reach-org"
   }
 }
 
@@ -118,7 +118,7 @@ resource "tls_cert_request" "client" {
   private_key_pem = tls_private_key.client[0].private_key_pem
   subject {
     common_name  = "${var.env}.vpn.client"
-    organization = "reach-atribo"
+    organization = "reach-org"
   }
 }
 resource "tls_locally_signed_cert" "client" {
@@ -162,7 +162,7 @@ resource "aws_ssm_parameter" "vpn_client_cert" {
 resource "aws_ec2_client_vpn_endpoint" "vpn_endpoint" {
   count = local.is_dev_vpn_enabled ? 1 : 0
 
-  description = "Atribo VPN Endpoint"
+  description = "org VPN Endpoint"
   server_certificate_arn = aws_acm_certificate.endpoint[0].arn
   authentication_options {
     type = "certificate-authentication"
@@ -254,6 +254,6 @@ resource "aws_security_group_rule" "vpn_ingress" {
 resource "aws_cloudwatch_log_group" "vpn_log_group" {
   count = local.is_dev_vpn_enabled ? 1 : 0
   
-  name = "reach-atribo-${var.env}-vpn-logs"
+  name = "reach-org-${var.env}-vpn-logs"
   retention_in_days = 7
 }
